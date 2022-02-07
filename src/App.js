@@ -1,7 +1,7 @@
-import { Home } from '@mui/icons-material';
+// import { Home } from '@mui/icons-material';
 import './App.css';
 import Header from './Header';
-import Home from '/Home';
+import Home from './Home';
 
 function App() {
   return (

@@ -6,7 +6,7 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 function Header() {
     return ( 
         <div className='header'>
-            <img className='header__logo' src="http://pngimg.com/uploads/amazon/amazon_PNG11.png" />
+            <img className='header__logo' src="http://pngimg.com/uploads/amazon/amazon_PNG11.png" alt='amazon logo' />
 
 
 
