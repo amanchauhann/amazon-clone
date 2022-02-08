@@ -6,6 +6,17 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const signIn = e => {
+        e.preventDefault();
+
+
+    }
+
+    const register = e => {
+        e.preventDefault();
+
+        
+    }
 
     return (
         <div className='login'>
@@ -23,7 +34,7 @@ function Login() {
                     <h5>Password</h5>
                     <input type={'password'} value={password} onChange={e => setPassword(e.target.value)} />
 
-                    <button className='login__signInButton'>Sign in</button>
+                    <button type='submit' onClick={signIn} className='login__signInButton'>Sign in</button>
                 </form>
 
                 <p>
@@ -31,7 +42,7 @@ function Login() {
                     see our Privacy Notice, our Cookies Notice and our Interest-Based Ads Notice.
                 </p>
 
-                <button className='login__registerButton'>Create your Amazon Account</button>
+                <button onClick={register} className='login__registerButton'>Create your Amazon Account</button>
             </div>
             
         </div>
