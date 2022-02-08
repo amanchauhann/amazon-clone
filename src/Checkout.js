@@ -1,4 +1,5 @@
 import './Checkout.css'
+import Subtotal from './Subtotal';
 
 
 function Checkout() {
