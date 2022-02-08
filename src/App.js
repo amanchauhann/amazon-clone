@@ -7,15 +7,17 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import Checkout from './Checkout';
 
 function App() {
   return (
     // BEM
     <BrowserRouter>
       <div className="app">
+      <Header />
         <Routes>
-          <Route path="/checkout" element={<Header />} />
-          <Route path="/" element={[<Header />, <Home />]} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/" element={<Home />} />
         </Routes>
       </div>
     </BrowserRouter>
