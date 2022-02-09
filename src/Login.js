@@ -14,8 +14,7 @@ function Login() {
         auth.signInWithEmailAndPassword(email, password).then((auth) => {
             navigate('/')
         })
-
-
+        .catch(error => alert(error.message))
     }
 
     const register = e => {
