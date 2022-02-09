@@ -11,6 +11,10 @@ function Login() {
     const signIn = e => {
         e.preventDefault();
 
+        auth.signInWithEmailAndPassword(email, password).then((auth) => {
+            navigate('/')
+        })
+
 
     }
 
