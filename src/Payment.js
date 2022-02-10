@@ -1,11 +1,68 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import CheckoutProduct from './CheckoutProduct';
 import './Payment.css'
 import { useStateValue } from './StateProvider';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { useEffect, useState } from 'react';
+import CurrencyFormat from 'react-currency-format';
+import { getBasketTotal } from './reducer';
+import axios from './axios';
+
 
 
 function Payment() {
     const [{ basket, user }, dispatch] = useStateValue();
+    const navigate = useNavigate();
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [succeeded, setSucceeded] = useState(false);
+    const [processing, setProcessing] = useState("");
+    const [error, setError] = useState(null);
+    const [disabled, setDisabled] = useState(true);
+    const [clienSecret, setClientSecret] = useState(true);
+
+    useEffect(() => {
+        const getClientSecret = async () => {
+            const response = await axios({
+                method: 'post',
+                // total currency should be in subunits, that is why '100'
+                url: `/payments/create?total=${getBasketTotal(basket) * 100}`
+            });
+            setClientSecret(response.data.clienSecret)
+        }
+
+        getClientSecret();
+    }, [basket])
+
+
+    const handleSubmit = async (event) => {
+        // fancy stripe stuff
+        event.preventDefault();
+        setProcessing(true);
+
+        const payload = await stripe.confirmCardPayment(clienSecret, {
+            payment_method: {
+                card: elements.getElement(CardElement)
+            }
+        }).then(({ paymentIntent }) => {
+            // paymentIntent is payment confirmation
+
+            setSucceeded(true)
+            setError(null)
+            setProcessing(false)
+
+            navigate.replace('/orders')
+        })
+    }
+
+    const handleChange = event => {
+        setDisabled(event.empty);
+        setError(event.error ? event.error.message : "");
+    }
+
+
     return (
         <div className='payment'>
 
@@ -51,9 +108,27 @@ function Payment() {
                     </div>
                     <div className='payment__details'>
                         {/* stripe magic */}
+                        <form onSubmit={handleSubmit}>
+                            <CardElement onChange={handleChange} />
+                            <div className='payment__priceContainer'>
+                                <CurrencyFormat
+                                    renderText={(value) => (
+                                        <h3>Order Total: {value}</h3>
+                                    )}
+                                    decimalScale={2}
+                                    value={getBasketTotal(basket)}
+                                    displayType={'text'}
+                                    thousandSeparator={true}
+                                    prefix={'$'}
+                                />
+                                <button disabled={processing || disabled || succeeded}>
+                                    <span>{processing ? <p>processing</p> : "BUY NOW"} </span>
+                                </button>
+                            </div>
+                            {error && <div>{error}</div>}
+                        </form>
                     </div>
                 </div>
-
             </div>
         </div>
     )
