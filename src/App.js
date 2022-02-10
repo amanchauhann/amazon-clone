@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { auth } from './firebase';
 import { useStateValue } from './StateProvider';
 // import { type } from '@testing-library/user-event/dist/type';
+import Payment from './Payment'
 
 function App() {
   const [{ basket }, dispatch] = useStateValue();
@@ -48,7 +49,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/checkout" element={[<Header />, <Checkout />]} />
-          <Route path="/payment" element={[<Header />, <h1>It's payments</h1>]} />
+          <Route path="/payment" element={[<Header />, <Payment />]} />
           <Route path="/" element={[<Header />, <Home />]} />
         </Routes>
       </div>
