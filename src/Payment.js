@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import CurrencyFormat from 'react-currency-format';
 import { getBasketTotal } from './reducer';
 import axios from './axios';
-import db from './firebase'
+import { db } from './firebase'
 
 
 function Payment() {
@@ -21,7 +21,7 @@ function Payment() {
     const [processing, setProcessing] = useState("");
     const [error, setError] = useState(null);
     const [disabled, setDisabled] = useState(true);
-    const [clientSecret, setClientSecret] = useState(true);
+    const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
         const getClientSecret = async () => {
@@ -52,11 +52,13 @@ function Payment() {
             // paymentIntent is payment confirmation
 
             db.collection('users')
-            .doc(user?.id)
+            .doc(user?.uid)
             .collection('orders')
             .doc(paymentIntent.id)
             .set({
-                basket
+                basket: basket,
+                amount: paymentIntent.amount,
+                created: paymentIntent.created
             })
 
             setSucceeded(true)
