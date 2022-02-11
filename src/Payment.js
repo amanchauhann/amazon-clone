@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CheckoutProduct from './CheckoutProduct';
 import './Payment.css'
 import { useStateValue } from './StateProvider';
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import CurrencyFormat from 'react-currency-format';
 import { getBasketTotal } from './reducer';
 import axios from './axios';
-
+import db from './firebase'
 
 
 function Payment() {
@@ -21,7 +21,7 @@ function Payment() {
     const [processing, setProcessing] = useState("");
     const [error, setError] = useState(null);
     const [disabled, setDisabled] = useState(true);
-    const [clienSecret, setClientSecret] = useState(true);
+    const [clientSecret, setClientSecret] = useState(true);
 
     useEffect(() => {
         const getClientSecret = async () => {
@@ -30,11 +30,13 @@ function Payment() {
                 // total currency should be in subunits, that is why '100'
                 url: `/payments/create?total=${getBasketTotal(basket) * 100}`
             });
-            setClientSecret(response.data.clienSecret)
+            setClientSecret(response.data.clientSecret)
         }
 
         getClientSecret();
     }, [basket])
+
+    console.log("the secret is ", clientSecret)
 
 
     const handleSubmit = async (event) => {
@@ -42,18 +44,30 @@ function Payment() {
         event.preventDefault();
         setProcessing(true);
 
-        const payload = await stripe.confirmCardPayment(clienSecret, {
+        const payload = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
                 card: elements.getElement(CardElement)
             }
         }).then(({ paymentIntent }) => {
             // paymentIntent is payment confirmation
 
+            db.collection('users')
+            .doc(user?.id)
+            .collection('orders')
+            .doc(paymentIntent.id)
+            .set({
+                basket
+            })
+
             setSucceeded(true)
             setError(null)
             setProcessing(false)
 
-            navigate.replace('/orders')
+            dispatch({
+                type: 'EMPTY_BASKET'
+            })
+
+            navigate('/orders', { replace: true })
         })
     }
 
